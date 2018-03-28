@@ -19,19 +19,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.DoubleStream;
 
 public class OngoingTestActivity extends AppCompatActivity {
 
     TextView textViewQuestion;
     RadioGroup radioGroupOptions;
     RadioButton radioButtonOptionA, radioButtonOptionB, radioButtonOptionC, radioButtonOptionD;
-    Button buttonNext, buttonPrevious, buttonMark;
+    Button buttonNext;
 
     String test_uid;
 
     int questionNo = 0;
 
     ArrayList<TestQuestionDetails> testQuestionDetailsArrayList = new ArrayList<>();
+    int[] checkedButtonIdArray;
+    double[] marks;
 
     public FirebaseAuth firebaseAuth;
 
@@ -54,6 +58,7 @@ public class OngoingTestActivity extends AppCompatActivity {
         getQuestions();
     }
 
+    //To display question.
     private void displayQuestion() {
         if(questionNo<(testQuestionDetailsArrayList.size()-1))
             buttonNext.setText("Next");
@@ -64,6 +69,7 @@ public class OngoingTestActivity extends AppCompatActivity {
             radioButtonOptionB.setText("B. " + testQuestionDetails.b);
             radioButtonOptionC.setText("C. " + testQuestionDetails.c);
             radioButtonOptionD.setText("D. " + testQuestionDetails.d);
+            radioGroupOptions.check(checkedButtonIdArray[questionNo]);
         }
         catch (Exception e){
             questionNo=0;
@@ -72,6 +78,8 @@ public class OngoingTestActivity extends AppCompatActivity {
             e.printStackTrace();}
     }
 
+    /*To get the questions from database into an ArrayList.
+    Creates the array containing checked options and marks.*/
     private void getQuestions() {
 
 
@@ -85,7 +93,8 @@ public class OngoingTestActivity extends AppCompatActivity {
 
                         TestQuestionDetails testQuestionDetails = ds.getValue(TestQuestionDetails.class);
 
-                        ds.child("");
+                        ds.child("");//To go a step deep into database table.
+
                         try {
 
                             testQuestionDetailsArrayList.add(testQuestionDetails);
@@ -96,6 +105,17 @@ public class OngoingTestActivity extends AppCompatActivity {
 
                     }
                     Log.i("size of array: ", testQuestionDetailsArrayList.size()+"");
+
+                    int size = testQuestionDetailsArrayList.size();
+
+                    //Array to store ids of checked radio buttons and marks.
+                    checkedButtonIdArray = new int[size];
+                    Arrays.fill(checkedButtonIdArray, -1);
+
+                    marks = new double[size];
+                    Arrays.fill(marks, 0);
+
+                    //Displays the first question.
                     displayQuestion();
                 }
 
@@ -108,13 +128,22 @@ public class OngoingTestActivity extends AppCompatActivity {
         catch (Exception e){e.printStackTrace();}
     }
 
-
     public void onNextButtonClicked(View view){
-        if(buttonNext.getText().equals("Submit")){
 
+        //See if any radio button is selected or not.
+        if(radioGroupOptions.getCheckedRadioButtonId()!= -1){
+            checkCorrectOption();
+        }
+
+        /*If already on last question, shows result.
+        If not, then increaments the questionNo.*/
+        if(buttonNext.getText().equals("Submit")){
+            onSubmit();
         }
         else
             questionNo++;
+
+        //If the last question hasn't been reached then display question.
         if(questionNo < (testQuestionDetailsArrayList.size()-1)) {
             textViewQuestion.setText("");
             displayQuestion();
@@ -128,12 +157,47 @@ public class OngoingTestActivity extends AppCompatActivity {
 
     public void onPreviousButtonClicked(View view){
 
+        //See if any radio button is selected or not.
+        if(radioGroupOptions.getCheckedRadioButtonId()!= -1){
+            checkCorrectOption();
+        }
+
+        //If its not the first question, decrement questionNo.
         if(questionNo>=1){
             questionNo--;
             textViewQuestion.setText("");
             displayQuestion();
         }
 
+    }
+
+    private void checkCorrectOption() {
+        int id = radioGroupOptions.getCheckedRadioButtonId();
+        checkedButtonIdArray[questionNo] = id;
+
+        RadioButton checkedButton = findViewById(id);
+
+        String option = checkedButton.getText().toString();
+        String correctOption = testQuestionDetailsArrayList.get(questionNo).correctAns;
+
+        option = option.substring(0,1);
+        if(option.equalsIgnoreCase(correctOption)) {
+            marks[questionNo] = 1;
+            Log.i("### MSG : ", marks[questionNo]+"");
+        }
+        else {
+            marks[questionNo] = -0.25;
+            Log.i("### MSG : ", marks[questionNo] + "");
+        }
+        Log.i("### Option : ", option);
+    }
+
+    private void onSubmit() {
+
+        double totalMarks = 0;
+        for(int i = 0; i < marks.length; i++)
+            totalMarks = totalMarks + marks[i];
+        Log.i("### Total Score :", totalMarks+"");
     }
 
     private void XMLReferences() {
