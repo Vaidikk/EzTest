@@ -104,7 +104,6 @@ public class OngoingTestActivity extends AppCompatActivity {
     public void onNextButtonClicked(View view){
         questionNo++;
         if(questionNo < testQuestionDetailsArrayList.size()) {
-            Log.i("### Question No.: ", questionNo + "");
             textViewQuestion.setText("");
             displayQuestion();
         }
