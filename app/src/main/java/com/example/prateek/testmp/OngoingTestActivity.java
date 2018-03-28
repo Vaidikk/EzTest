@@ -51,8 +51,6 @@ public class OngoingTestActivity extends AppCompatActivity {
         Log.i("####Value===", test_uid);
 
         getQuestions();
-
-//        displayQuestion();
     }
 
     private void displayQuestion() {
