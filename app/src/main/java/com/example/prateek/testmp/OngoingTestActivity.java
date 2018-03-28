@@ -192,6 +192,8 @@ public class OngoingTestActivity extends AppCompatActivity {
         Log.i("### Option : ", option);
     }
 
+
+    //Shows total marks.
     private void onSubmit() {
 
         double totalMarks = 0;
