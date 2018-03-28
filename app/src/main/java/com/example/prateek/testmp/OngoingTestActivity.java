@@ -87,7 +87,7 @@ public class OngoingTestActivity extends AppCompatActivity {
                         }
 
                     }
-//                    Log.i("size of array: ", testQuestionDetailsArrayList.size()+"");
+                    Log.i("size of array: ", testQuestionDetailsArrayList.size()+"");
                     displayQuestion();
                 }
 
