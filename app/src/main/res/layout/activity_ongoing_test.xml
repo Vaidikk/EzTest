@@ -54,14 +54,39 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="D." />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonPrevious"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onPreviousButtonClicked"
+                    android:text="Previous" />
+
+                <Button
+                    android:id="@+id/buttonMark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Mark" />
+
+                <Button
+                    android:id="@+id/buttonNext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onNextButtonClicked"
+                    android:text="Next" />
+
+            </LinearLayout>
         </RadioGroup>
 
-        <Button
-            android:id="@+id/buttonNext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="onNextButtonClicked"
-            android:text="Next" />
     </LinearLayout>
 
 

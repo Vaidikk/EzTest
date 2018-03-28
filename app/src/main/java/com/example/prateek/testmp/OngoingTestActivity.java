@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -24,7 +25,7 @@ public class OngoingTestActivity extends AppCompatActivity {
     TextView textViewQuestion;
     RadioGroup radioGroupOptions;
     RadioButton radioButtonOptionA, radioButtonOptionB, radioButtonOptionC, radioButtonOptionD;
-    Button buttonNext;
+    Button buttonNext, buttonPrevious, buttonMark;
 
     String test_uid;
 
@@ -54,14 +55,21 @@ public class OngoingTestActivity extends AppCompatActivity {
     }
 
     private void displayQuestion() {
-
-        TestQuestionDetails testQuestionDetails = testQuestionDetailsArrayList.get(questionNo);
-        textViewQuestion.append(testQuestionDetails.question);
-        radioButtonOptionA.setText("A. " + testQuestionDetails.a);
-        radioButtonOptionB.setText("B. " + testQuestionDetails.b);
-        radioButtonOptionC.setText("C. " + testQuestionDetails.c);
-        radioButtonOptionD.setText("D. " + testQuestionDetails.d);
-
+        if(questionNo<(testQuestionDetailsArrayList.size()-1))
+            buttonNext.setText("Next");
+        try {
+            TestQuestionDetails testQuestionDetails = testQuestionDetailsArrayList.get(questionNo);
+            textViewQuestion.append(testQuestionDetails.question);
+            radioButtonOptionA.setText("A. " + testQuestionDetails.a);
+            radioButtonOptionB.setText("B. " + testQuestionDetails.b);
+            radioButtonOptionC.setText("C. " + testQuestionDetails.c);
+            radioButtonOptionD.setText("D. " + testQuestionDetails.d);
+        }
+        catch (Exception e){
+            questionNo=0;
+            textViewQuestion.setText("");
+            displayQuestion();
+            e.printStackTrace();}
     }
 
     private void getQuestions() {
@@ -102,11 +110,30 @@ public class OngoingTestActivity extends AppCompatActivity {
 
 
     public void onNextButtonClicked(View view){
-        questionNo++;
-        if(questionNo < testQuestionDetailsArrayList.size()) {
+        if(buttonNext.getText().equals("Submit")){
+
+        }
+        else
+            questionNo++;
+        if(questionNo < (testQuestionDetailsArrayList.size()-1)) {
             textViewQuestion.setText("");
             displayQuestion();
         }
+        else{
+            textViewQuestion.setText("");
+            buttonNext.setText("Submit");
+            displayQuestion();
+        }
+    }
+
+    public void onPreviousButtonClicked(View view){
+
+        if(questionNo>=1){
+            questionNo--;
+            textViewQuestion.setText("");
+            displayQuestion();
+        }
+
     }
 
     private void XMLReferences() {
