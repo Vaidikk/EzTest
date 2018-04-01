@@ -1,6 +1,7 @@
 package com.example.prateek.testmp;
 
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,10 +25,11 @@ import java.util.stream.DoubleStream;
 
 public class OngoingTestActivity extends AppCompatActivity {
 
-    TextView textViewQuestion;
+    TextView textViewQuestion, textViewResult;
     RadioGroup radioGroupOptions;
     RadioButton radioButtonOptionA, radioButtonOptionB, radioButtonOptionC, radioButtonOptionD;
     Button buttonNext;
+    ConstraintLayout testConstraintLayout, resultConstraintLayout;
 
     String test_uid;
 
@@ -200,16 +202,24 @@ public class OngoingTestActivity extends AppCompatActivity {
         for(int i = 0; i < marks.length; i++)
             totalMarks = totalMarks + marks[i];
         Log.i("### Total Score :", totalMarks+"");
+
+        textViewResult.setText(totalMarks+"");
+
+        testConstraintLayout.setVisibility(View.INVISIBLE);
+        resultConstraintLayout.setVisibility((View.VISIBLE));
     }
 
     private void XMLReferences() {
 
         textViewQuestion = findViewById(R.id.textViewQuestion);
+        textViewResult = findViewById(R.id.textViewResult);
         radioGroupOptions = findViewById(R.id.radioGroupOptions);
         radioButtonOptionA = findViewById(R.id.radioButtonOptionA);
         radioButtonOptionB = findViewById(R.id.radioButtonOptionB);
         radioButtonOptionC = findViewById(R.id.radioButtonOptionC);
         radioButtonOptionD = findViewById(R.id.radioButtonOptionD);
         buttonNext = findViewById(R.id.buttonNext);
+        testConstraintLayout = findViewById(R.id.testConstraintLayout);
+        resultConstraintLayout = findViewById(R.id.resultConstraintLayout);
     }
 }
