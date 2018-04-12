@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -21,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.DoubleStream;
 
 public class OngoingTestActivity extends AppCompatActivity {
 
@@ -29,19 +29,25 @@ public class OngoingTestActivity extends AppCompatActivity {
     RadioGroup radioGroupOptions;
     RadioButton radioButtonOptionA, radioButtonOptionB, radioButtonOptionC, radioButtonOptionD;
     Button buttonNext;
+    ListView listViewScoreBoard;
     ConstraintLayout testConstraintLayout, resultConstraintLayout;
 
-    String test_uid;
+    String test_id;
+    String Uid;
 
     int questionNo = 0;
 
     ArrayList<TestQuestionDetails> testQuestionDetailsArrayList = new ArrayList<>();
+    ArrayList<ScoreBoard> studentScoresArrayList = new ArrayList<>();
+
     int[] checkedButtonIdArray;
     double[] marks;
 
     public FirebaseAuth firebaseAuth;
 
     private DatabaseReference mDatabase;
+
+    DBManager mDBManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,32 +58,13 @@ public class OngoingTestActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDBManager = new DBManager();
 
         Intent intent = getIntent();
-        test_uid = intent.getStringExtra("test_uid");
-        Log.i("####Value===", test_uid);
+        test_id = intent.getStringExtra("test_id");
+        Log.i("####Value===", test_id);
 
         getQuestions();
-    }
-
-    //To display question.
-    private void displayQuestion() {
-        if(questionNo<(testQuestionDetailsArrayList.size()-1))
-            buttonNext.setText("Next");
-        try {
-            TestQuestionDetails testQuestionDetails = testQuestionDetailsArrayList.get(questionNo);
-            textViewQuestion.append(testQuestionDetails.question);
-            radioButtonOptionA.setText("A. " + testQuestionDetails.a);
-            radioButtonOptionB.setText("B. " + testQuestionDetails.b);
-            radioButtonOptionC.setText("C. " + testQuestionDetails.c);
-            radioButtonOptionD.setText("D. " + testQuestionDetails.d);
-            radioGroupOptions.check(checkedButtonIdArray[questionNo]);
-        }
-        catch (Exception e){
-            questionNo=0;
-            textViewQuestion.setText("");
-            displayQuestion();
-            e.printStackTrace();}
     }
 
     /*To get the questions from database into an ArrayList.
@@ -86,7 +73,7 @@ public class OngoingTestActivity extends AppCompatActivity {
 
 
         try {
-            mDatabase.child("tests").child(test_uid).child("testQuestionDetails").addValueEventListener(new ValueEventListener() {
+            mDatabase.child("tests").child(test_id).child("testQuestionDetails").addValueEventListener(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -128,6 +115,26 @@ public class OngoingTestActivity extends AppCompatActivity {
             });
         }
         catch (Exception e){e.printStackTrace();}
+    }
+
+    //To display question.
+    private void displayQuestion() {
+        if(questionNo<(testQuestionDetailsArrayList.size()-1))
+            buttonNext.setText("Next");
+        try {
+            TestQuestionDetails testQuestionDetails = testQuestionDetailsArrayList.get(questionNo);
+            textViewQuestion.append(testQuestionDetails.question);
+            radioButtonOptionA.setText("A. " + testQuestionDetails.a);
+            radioButtonOptionB.setText("B. " + testQuestionDetails.b);
+            radioButtonOptionC.setText("C. " + testQuestionDetails.c);
+            radioButtonOptionD.setText("D. " + testQuestionDetails.d);
+            radioGroupOptions.check(checkedButtonIdArray[questionNo]);
+        }
+        catch (Exception e){
+            questionNo=0;
+            textViewQuestion.setText("");
+            displayQuestion();
+            e.printStackTrace();}
     }
 
     public void onNextButtonClicked(View view){
@@ -194,19 +201,64 @@ public class OngoingTestActivity extends AppCompatActivity {
         Log.i("### Option : ", option);
     }
 
-
     //Shows total marks.
     private void onSubmit() {
-
+        Log.i("Position", "Inside onSubmit");
         double totalMarks = 0;
-        for(int i = 0; i < marks.length; i++)
-            totalMarks = totalMarks + marks[i];
-        Log.i("### Total Score :", totalMarks+"");
+        try {
+            for (int i = 0; i < marks.length; i++)
+                totalMarks = totalMarks + marks[i];
+            Log.i("### Total Score :", totalMarks + "");
+            Uid = firebaseAuth.getCurrentUser().getUid().toString();
 
-        textViewResult.setText(totalMarks+"");
+            mDBManager.addScore(totalMarks, test_id, Uid);
+
+            textViewResult.setText(totalMarks + "");
+
+            showScoreBoard();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
         testConstraintLayout.setVisibility(View.INVISIBLE);
         resultConstraintLayout.setVisibility((View.VISIBLE));
+    }
+
+    private void showScoreBoard() {
+
+        studentScoresArrayList = mDBManager.getScoreList(test_id);
+
+        sortScores(studentScoresArrayList);
+
+        Log.i("StudentScoresListSize", studentScoresArrayList.size()+"");
+        ArrayList<String> scoresList = new ArrayList<String>();
+
+        for(int i = 0; i < studentScoresArrayList.size(); i++){
+            scoresList.add(i, (studentScoresArrayList.get(i).name + ": " + studentScoresArrayList.get(i).marks));
+        }
+
+        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, scoresList);
+
+        listViewScoreBoard.setAdapter(listAdapter);
+    }
+
+    private void sortScores(ArrayList<ScoreBoard> studentScoresArrayList) {
+        int n = studentScoresArrayList.size();
+        ScoreBoard temp;
+
+        //Sorting the arrayList according to message frequency.
+        for(int i = 0; i < n; i++){
+            for(int j = 1; j < (n-i); j++){
+                if(Double.parseDouble(studentScoresArrayList.get(j-1).marks)>Double.parseDouble(studentScoresArrayList.get(j).marks)){
+                    //Swap elements
+                    temp = studentScoresArrayList.get(j-1);
+                    studentScoresArrayList.set((j-1), studentScoresArrayList.get(j));
+                    studentScoresArrayList.set(j, temp);
+
+                }
+            }
+        }
     }
 
     private void XMLReferences() {

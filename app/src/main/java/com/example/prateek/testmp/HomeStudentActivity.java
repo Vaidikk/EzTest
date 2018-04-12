@@ -88,7 +88,7 @@ public class HomeStudentActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent intent = new Intent(HomeStudentActivity.this, OngoingTestActivity.class);
-                intent.putExtra("test_uid", fullTestUID.get(position));
+                intent.putExtra("test_id", fullTestUID.get(position));
                 startActivity(intent);
             }
         });
