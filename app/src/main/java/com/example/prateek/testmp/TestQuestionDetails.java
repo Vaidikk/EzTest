@@ -30,8 +30,4 @@ public class TestQuestionDetails {
 
     }
 
-    public String getQuestion(){
-        return question;
-    }
-
 }

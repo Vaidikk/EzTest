@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
         //getting parameters
 
-        String email = UserEmailEditText.getText().toString();
-        String password= PasswordEditText.getText().toString();
+        String email = UserEmailEditText.getText().toString().trim();
+        String password= PasswordEditText.getText().toString().trim();
 
         //checking parameters
         if(TextUtils.isEmpty(email)){
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void goToSignUpActicity(View view ){
+    public void goToSignUpActivity(View view ){
 
         Intent intent = new Intent(this, SignUp.class);
         startActivity(intent);

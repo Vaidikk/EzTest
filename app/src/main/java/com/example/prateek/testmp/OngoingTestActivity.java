@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class OngoingTestActivity extends AppCompatActivity {
 
@@ -38,7 +39,7 @@ public class OngoingTestActivity extends AppCompatActivity {
     int questionNo = 0;
 
     ArrayList<TestQuestionDetails> testQuestionDetailsArrayList = new ArrayList<>();
-    ArrayList<ScoreBoard> studentScoresArrayList = new ArrayList<>();
+    ArrayList<Object> studentScoresArrayList = new ArrayList();
 
     int[] checkedButtonIdArray;
     double[] marks;
@@ -54,17 +55,21 @@ public class OngoingTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ongoing_test);
 
-        XMLReferences();
+        try {
+            XMLReferences();
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDBManager = new DBManager();
+            firebaseAuth = FirebaseAuth.getInstance();
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+            mDBManager = new DBManager();
 
-        Intent intent = getIntent();
-        test_id = intent.getStringExtra("test_id");
-        Log.i("####Value===", test_id);
+            Intent intent = getIntent();
+            test_id = intent.getStringExtra("test_uid");
+            Log.i("####Value===", test_id);
 
-        getQuestions();
+            getQuestions();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /*To get the questions from database into an ArrayList.
@@ -216,43 +221,77 @@ public class OngoingTestActivity extends AppCompatActivity {
             textViewResult.setText(totalMarks + "");
 
             showScoreBoard();
+
+            testConstraintLayout.setVisibility(View.INVISIBLE);
+            resultConstraintLayout.setVisibility((View.VISIBLE));
         }
         catch (Exception e){
             e.printStackTrace();
         }
 
-        testConstraintLayout.setVisibility(View.INVISIBLE);
-        resultConstraintLayout.setVisibility((View.VISIBLE));
+
     }
 
-    private void showScoreBoard() {
+    private void showScoreBoard()  {
 
-        studentScoresArrayList = mDBManager.getScoreList(test_id);
+        try {
 
-        sortScores(studentScoresArrayList);
+            mDBManager.getScoreList(test_id, new MyCallback() {
+                @Override
+                public void onCallback(ArrayList<Object> value) {
 
-        Log.i("StudentScoresListSize", studentScoresArrayList.size()+"");
-        ArrayList<String> scoresList = new ArrayList<String>();
+                    studentScoresArrayList = value;
+                    Log.i("StudentScoresListSize", studentScoresArrayList.size() + "");
+                   // callme();
+                    sortScores(studentScoresArrayList);
+                    Collections.reverse(studentScoresArrayList);
+                    ArrayList<String> scoresList = new ArrayList();
+                    if(studentScoresArrayList.size()!=0) {
+                        for (int i = 0; i < studentScoresArrayList.size(); i++) {
+                            ScoreBoard scoreBoard = (ScoreBoard) studentScoresArrayList.get(i);
+                            scoresList.add(i, ((i + 1) + ". " + scoreBoard.name + " : " + scoreBoard.marks));
 
-        for(int i = 0; i < studentScoresArrayList.size(); i++){
-            scoresList.add(i, (studentScoresArrayList.get(i).name + ": " + studentScoresArrayList.get(i).marks));
+
+                        }
+
+                        Log.e("Printing scorelist", scoresList.get(0));
+
+                        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, scoresList);
+
+                        listViewScoreBoard.setAdapter(listAdapter);
+                    }
+                }
+
+                @Override
+                public void onCallbackString(String string) {
+
+                }
+
+            });
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, scoresList);
-
-        listViewScoreBoard.setAdapter(listAdapter);
     }
 
-    private void sortScores(ArrayList<ScoreBoard> studentScoresArrayList) {
+
+
+    private void sortScores(ArrayList<Object> studentScoresArrayList)  {
         int n = studentScoresArrayList.size();
         ScoreBoard temp;
 
         //Sorting the arrayList according to message frequency.
         for(int i = 0; i < n; i++){
             for(int j = 1; j < (n-i); j++){
-                if(Double.parseDouble(studentScoresArrayList.get(j-1).marks)>Double.parseDouble(studentScoresArrayList.get(j).marks)){
+
+                ScoreBoard scoreBoard=(ScoreBoard) studentScoresArrayList.get(j-1);
+                ScoreBoard scoreBoard1=(ScoreBoard)studentScoresArrayList.get(j);
+
+                if(Double.parseDouble(scoreBoard.marks)>Double.parseDouble(scoreBoard1.marks)){
                     //Swap elements
-                    temp = studentScoresArrayList.get(j-1);
+                    temp = (ScoreBoard) studentScoresArrayList.get(j-1);
                     studentScoresArrayList.set((j-1), studentScoresArrayList.get(j));
                     studentScoresArrayList.set(j, temp);
 
@@ -273,5 +312,6 @@ public class OngoingTestActivity extends AppCompatActivity {
         buttonNext = findViewById(R.id.buttonNext);
         testConstraintLayout = findViewById(R.id.testConstraintLayout);
         resultConstraintLayout = findViewById(R.id.resultConstraintLayout);
+        listViewScoreBoard=findViewById(R.id.listViewScoreBoard);
     }
 }

@@ -27,9 +27,9 @@ public class DBManager {
 
     public ArrayList<String> arrayList= new ArrayList<>();
 
-    public ArrayList<User> users = new ArrayList<>();
+    public ArrayList<Object> users = new ArrayList<>();
 
-    public ArrayList<ScoreBoard> studentScoresArrayList = new ArrayList<>();
+    public ArrayList<Object> studentScoresArrayList = new ArrayList<>();
 
     public void getUserListFromDB(String userType,final MyCallback myCallback  ) {
 
@@ -58,25 +58,25 @@ public class DBManager {
                                 Log.i("Email", user.getEmail().toString());
                                 users.add(user);
                             }catch(Exception e){
-                                 e.printStackTrace();
-                                }
+                                e.printStackTrace();
+                            }
 
                             arrayList.add(ds.child("Full_Name").getValue().toString());
 
                         }
 
                         currentChildren++;
-                         }
+                    }
 
                     try {
 
-                            myCallback.onCallback(users);
-                            Log.i("UserTypeValue*++++**", arrayList.get(1));
+                        myCallback.onCallback(users);
+                        Log.i("UserTypeValue*++++**", arrayList.get(1));
 
-                         } catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
-                                }
-                      }
+                    }
+                }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -97,7 +97,10 @@ public class DBManager {
         mDatabase.child("tests").child(test_id).child("Scores").child(Uid).setValue(totalMarks);
     }
 
-    public ArrayList<ScoreBoard> getScoreList(String test_id){
+    String name;
+    String marks;
+
+    public void getScoreList(String test_id,final MyCallback myCallback){
 
         try{
 
@@ -106,26 +109,41 @@ public class DBManager {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    String name;
-                    String marks;
+                    for (final DataSnapshot ds : dataSnapshot.getChildren()){
 
-                    for (DataSnapshot ds : dataSnapshot.getChildren()){
+                        //DatabaseReference xDatabase=FirebaseDatabase.getInstance().getReference();
+                        //name=xDatabase.child("users").child("Student").child(ds.getKey()).child("Full_Name").;
+                        Log.e("UID",ds.getKey());
+                         getStudentNameFromUid(ds.getKey(), new MyCallback() {
+                            @Override
+                            public void onCallback(ArrayList<Object> value) {
 
-                         DatabaseReference xDatabase=FirebaseDatabase.getInstance().getReference();
+                            }
+
+                            @Override
+                            public void onCallbackString(String string) {
+                                name=string;
+
+                                marks = ds.getValue().toString();
+                                Log.i("valuesOfDS",ds.getKey());
+                                Log.i("Name + Marks", name + marks);
+
+                                scoreBoardObject = new ScoreBoard(name, marks);
+                                studentScoresArrayList.add(scoreBoardObject);
+                                myCallback.onCallback(studentScoresArrayList);
+
+                            }
 
 
-                        name=xDatabase.child("users").child("Student").child(ds.getKey()).child("Full_Name").;
-//                        name = getStudentNameFromUid(ds.getKey());
+                        });
 
-                        marks = ds.getValue().toString();
-
-                        Log.i("Name + Marks", name + marks);
-
-                        scoreBoardObject = new ScoreBoard(name, marks);
-                        studentScoresArrayList.add(scoreBoardObject);
                     }
 
+                    Log.i("StudentScoresListSize*", studentScoresArrayList.size() + "");
+
+
                 }
+
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -133,23 +151,32 @@ public class DBManager {
                 }
             });
         }catch (Exception e) {e.printStackTrace();}
-        Log.i("studentScoreArrayList", studentScoresArrayList.get(0).name);
-        return studentScoresArrayList;
+        //Log.i("studentScoreArrayList", studentScoresArrayList.get(0).name);
+        //return studentScoresArrayList;
     }
 
     //called in getScoreList
-    private String getStudentNameFromUid(String Uid) {
+    private void getStudentNameFromUid(String Uid,final MyCallback myCallback) {
+
+
+
         Log.i("Position","Inside getNamefromID");
+
         try{
 
-            final String[] name = new String[1];
+            //final String[] name = new String[1];
+
             mDatabase.child("users").child("Student").child(Uid).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    Log.e("Getting something",dataSnapshot.getKey());
+
                     User user = dataSnapshot.getValue(User.class);
                     Log.i("User", user.Full_Name);
-                    name[0] = user.Full_Name;
-                    Log.i("name[0]",name[0]);
+                    String name = user.Full_Name;
+                    Log.i("name[0]",name);
+                    myCallback.onCallbackString(name);
                 }
 
                 @Override
@@ -157,8 +184,8 @@ public class DBManager {
 
                 }
             });
-            return name[0];
+            //return name[0];
         }catch (Exception e){e.printStackTrace();}
-        return "";
+        //return "";
     }
 }

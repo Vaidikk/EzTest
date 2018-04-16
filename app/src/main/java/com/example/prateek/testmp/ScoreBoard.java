@@ -9,6 +9,10 @@ public class ScoreBoard {
     public String name;
     public String marks;
 
+    public ScoreBoard(){
+
+    }
+
     public ScoreBoard(String name, String marks) {
         this.name = name;
         this.marks = marks;

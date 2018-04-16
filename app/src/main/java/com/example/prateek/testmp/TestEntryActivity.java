@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ public class TestEntryActivity extends AppCompatActivity {
 
     EditText TestNameEditText,TotalQuestionEditText,TotalNoOfStudent;
     RelativeLayout relativeLayout;
+
     ConstraintLayout constraintLayout;
     TextView QuestionNoTextView;
     EditText Question;
@@ -37,6 +39,7 @@ public class TestEntryActivity extends AppCompatActivity {
     EditText editTextOption4;
     EditText editTextCorrectOption;
     Button buttonAddQuestion;
+    RadioGroup radioGroupOptions;
 
     String testName,totalNoOfStudent;
 
@@ -103,8 +106,8 @@ public class TestEntryActivity extends AppCompatActivity {
 
         if(TextUtils.isEmpty(testName)||TextUtils.isEmpty(totalNoOfStudent)){
             Toast.makeText(TestEntryActivity.this, "Please fill all fields", Toast.LENGTH_LONG).show();
-            if(maxQuestionNo<=1){
-                Toast.makeText(TestEntryActivity.this, "Total Questions cannot be less than 1", Toast.LENGTH_LONG).show();
+            if(maxQuestionNo<=0){
+                Toast.makeText(TestEntryActivity.this, "Total Question cant be less than 0", Toast.LENGTH_LONG).show();
                 return;
             }
             return;
@@ -131,6 +134,7 @@ public class TestEntryActivity extends AppCompatActivity {
         editTextOption3 = (EditText)findViewById(R.id.edit_text_option3);
         editTextOption4 = (EditText)findViewById(R.id.edit_text_option4);
         editTextCorrectOption = (EditText)findViewById(R.id.edit_text_correctOption);
+        radioGroupOptions = findViewById(R.id.radioGroupOptions2);
         buttonAddQuestion = (Button)findViewById(R.id.button_addQuestion);
         QuestionNoTextView= (TextView) findViewById(R.id.QuestionNoTextView);
         QuestionNoTextView.setText("Question No:-"+questionNo);
@@ -143,7 +147,11 @@ public class TestEntryActivity extends AppCompatActivity {
         String b = editTextOption2.getText().toString();
         String c = editTextOption3.getText().toString();
         String d = editTextOption4.getText().toString();
-        String correctAns = editTextCorrectOption.getText().toString();
+        String correctAns="";
+        if(radioGroupOptions.getCheckedRadioButtonId()!= -1){
+            correctAns = getCheckedOption();
+        }
+
 
         clearAllEditText();
 
@@ -165,6 +173,21 @@ public class TestEntryActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    private String getCheckedOption() {
+        int id = radioGroupOptions.getCheckedRadioButtonId();
+        switch (id){
+            case 0:
+                return "A";
+            case 1:
+                return "B";
+            case 2:
+                return "C";
+            case 3:
+                return "D";
+        }
+        return "";
     }
 
     private void clearAllEditText() {
