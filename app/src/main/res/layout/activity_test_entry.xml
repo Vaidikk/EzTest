@@ -8,7 +8,7 @@
     tools:context="com.example.prateek.testmp.TestEntryActivity">
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/RelativeLayout"
+        android:id="@+id/ChildConstraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible">
@@ -160,7 +160,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
-        tools:layout_editor_absoluteX="41dp"
+        tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp">
 
         <Button
@@ -196,14 +196,11 @@
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="349dp"
-                android:layout_height="match_parent"
+                android:layout_height="230dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="8dp"
-                android:orientation="vertical"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edit_text_question">
+                android:orientation="vertical">
 
                 <EditText
                     android:id="@+id/edit_text_option1"
@@ -214,9 +211,9 @@
                     android:ems="10"
                     android:hint="Option A"
                     android:inputType="textPersonName"
+                    android:textColor="@color/colorPrimary"
                     android:textIsSelectable="false"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorPrimary"/>
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/edit_text_option2"
@@ -227,8 +224,8 @@
                     android:ems="10"
                     android:hint="Option B"
                     android:inputType="textPersonName"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorPrimary" />
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/edit_text_option3"
@@ -239,8 +236,8 @@
                     android:ems="10"
                     android:hint="Option C"
                     android:inputType="textPersonName"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorPrimary" />
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/edit_text_option4"
@@ -251,30 +248,27 @@
                     android:ems="10"
                     android:hint="Option D"
                     android:inputType="textPersonName"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorPrimary" />
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp" />
 
 
             </LinearLayout>
         </ScrollView>
 
         <TextView
-            android:layout_width="318dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="128dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:text="Correct\nOption:"
             android:textColor="@color/colorPrimary"
             android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.16"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.736" />
+            app:layout_constraintHorizontal_bias="0.027"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <RadioGroup
             android:id="@+id/radioGroupOptions2"
@@ -286,15 +280,15 @@
             android:layout_marginTop="8dp"
             android:isScrollContainer="true"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/button_addQuestion"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.546"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.745">
+            app:layout_constraintTop_toBottomOf="@+id/scrollView"
+            app:layout_constraintVertical_bias="0.446">
 
             <RadioButton
-                android:id="@+id/radioButtonOptionA"
+                android:id="@+id/A"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -303,7 +297,7 @@
                 android:textSize="12sp" />
 
             <RadioButton
-                android:id="@+id/radioButtonOptionB"
+                android:id="@+id/B"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -312,7 +306,7 @@
                 android:textSize="12sp" />
 
             <RadioButton
-                android:id="@+id/radioButtonOptionC"
+                android:id="@+id/C"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -321,7 +315,7 @@
                 android:textSize="12sp" />
 
             <RadioButton
-                android:id="@+id/radioButtonOptionD"
+                android:id="@+id/D"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -341,12 +335,12 @@
             android:gravity="top"
             android:hint="Question"
             android:inputType="textPersonName"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"
             app:layout_constraintHorizontal_bias="0.526"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:textSize="20sp"
-            android:textColor="@color/colorPrimary" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/QuestionNoTextView"
@@ -354,10 +348,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Question no :- "
+            android:textColor="@color/colorPrimary"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:textColor="@color/colorPrimary"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 

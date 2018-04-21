@@ -1,6 +1,5 @@
 package com.example.prateek.testmp;
 
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,15 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,7 +25,7 @@ import java.util.Map;
 public class TestEntryActivity extends AppCompatActivity {
 
     EditText TestNameEditText,TotalQuestionEditText,TotalNoOfStudent;
-    RelativeLayout relativeLayout;
+    ConstraintLayout childConstraintLayout;
 
     ConstraintLayout constraintLayout;
     TextView QuestionNoTextView;
@@ -37,7 +34,6 @@ public class TestEntryActivity extends AppCompatActivity {
     EditText editTextOption2;
     EditText editTextOption3;
     EditText editTextOption4;
-    EditText editTextCorrectOption;
     Button buttonAddQuestion;
     RadioGroup radioGroupOptions;
 
@@ -113,7 +109,7 @@ public class TestEntryActivity extends AppCompatActivity {
             return;
         }
 
-        relativeLayout.setVisibility(View.INVISIBLE);
+        childConstraintLayout.setVisibility(View.INVISIBLE);
         constraintLayout.setVisibility(View.VISIBLE);
 
     }
@@ -124,7 +120,7 @@ public class TestEntryActivity extends AppCompatActivity {
         TotalQuestionEditText=(EditText)findViewById(R.id.TotalQuestionEditText);
         TotalNoOfStudent=(EditText)findViewById(R.id.TotalNoOfStudent);
 
-        relativeLayout=(RelativeLayout)findViewById(R.id.RelativeLayout);
+        childConstraintLayout =findViewById(R.id.ChildConstraintLayout);
         constraintLayout=(ConstraintLayout)findViewById(R.id.ConstraintLayout);
 
 
@@ -133,7 +129,6 @@ public class TestEntryActivity extends AppCompatActivity {
         editTextOption2 = (EditText)findViewById(R.id.edit_text_option2);
         editTextOption3 = (EditText)findViewById(R.id.edit_text_option3);
         editTextOption4 = (EditText)findViewById(R.id.edit_text_option4);
-        editTextCorrectOption = (EditText)findViewById(R.id.edit_text_correctOption);
         radioGroupOptions = findViewById(R.id.radioGroupOptions2);
         buttonAddQuestion = (Button)findViewById(R.id.button_addQuestion);
         QuestionNoTextView= (TextView) findViewById(R.id.QuestionNoTextView);
@@ -151,11 +146,12 @@ public class TestEntryActivity extends AppCompatActivity {
         if(radioGroupOptions.getCheckedRadioButtonId()!= -1){
             correctAns = getCheckedOption();
         }
-
+        Log.i("RadioId",radioGroupOptions.getCheckedRadioButtonId()+"");
+        Log.i("CorrectAns",correctAns);
 
         clearAllEditText();
 
-        if (TextUtils.isEmpty(question) || TextUtils.isEmpty(a) || TextUtils.isEmpty(b) || TextUtils.isEmpty(c) || TextUtils.isEmpty(d) || TextUtils.isEmpty(correctAns)) {
+        if (TextUtils.isEmpty(question) || TextUtils.isEmpty(a) || TextUtils.isEmpty(b) || TextUtils.isEmpty(c) || TextUtils.isEmpty(d) ) {
             Toast.makeText(TestEntryActivity.this, "Please fill all fields", Toast.LENGTH_LONG).show();
             return;
         } else
@@ -177,17 +173,10 @@ public class TestEntryActivity extends AppCompatActivity {
 
     private String getCheckedOption() {
         int id = radioGroupOptions.getCheckedRadioButtonId();
-        switch (id){
-            case 0:
-                return "A";
-            case 1:
-                return "B";
-            case 2:
-                return "C";
-            case 3:
-                return "D";
-        }
-        return "";
+        View RadioButton = radioGroupOptions.findViewById(id);
+        String option = getResources().getResourceEntryName(id);
+        Log.i("CORRECTANS**",option);
+        return option;
     }
 
     private void clearAllEditText() {
@@ -196,7 +185,6 @@ public class TestEntryActivity extends AppCompatActivity {
         editTextOption2.setText("");
         editTextOption3.setText("");
         editTextOption4.setText("");
-        editTextCorrectOption.setText("");
 
     }
 

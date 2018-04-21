@@ -20,14 +20,14 @@
             android:layout_width="352dp"
             android:layout_height="71dp"
             android:layout_margin="10dp"
+            android:gravity="center"
             android:hint="Question"
+            android:textAlignment="textStart"
             android:textColor="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.25"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:gravity="center"
-            android:textAlignment="textStart"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RadioGroup
             android:id="@+id/radioGroupOptions"

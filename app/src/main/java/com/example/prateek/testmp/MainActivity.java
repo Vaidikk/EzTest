@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
         //if user is already login
         if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-            Intent intent = new Intent(MainActivity.this, HomeStudentActivity.class);
+            Intent intent = new Intent(MainActivity.this, HomeTeacherActivity.class);
             startActivity(intent);
         }
 
